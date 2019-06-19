@@ -1,13 +1,48 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/robfig/cron"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
-	"time"
 )
+
+type DbConfigRecord struct {
+	Name string `json:"name"`
+	Host string `json:"host"`
+	Cron string `json:"cron"`
+}
+
+type Configuration struct {
+	Database DbConfigRecord `json:"database"`
+}
+
+func parseConfig() {
+	jsonFile, err := os.Open("resources/test-config.json")
+	if err != nil {
+		log.Fatalf("Unable to open configuration file: %s\n", err)
+	}
+	defer jsonFile.Close()
+
+	jsonFileContents, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Fatalf("Unable to read the configuration file: %s\n", err)
+	}
+
+	var config Configuration
+
+	err = json.Unmarshal(jsonFileContents, &config)
+	if err != nil {
+		log.Fatalf("Unable to parse config JSON: %s", err)
+	}
+
+	fmt.Println(config.Database.Name)
+	fmt.Println(config.Database.Host)
+	fmt.Println(config.Database.Cron)
+}
 
 func cronBody() {
 	log.Println("tick")
@@ -37,11 +72,11 @@ func initCron() {
 func main() {
 	fmt.Println("influx-cron-backup")
 
+	parseConfig()
 	//initCron()
+	//execBackup()
 
-	execBackup()
-
-	for true {
-		time.Sleep(10 * time.Second)
-	}
+	//for true {
+	//	time.Sleep(10 * time.Second)
+	//}
 }

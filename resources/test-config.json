@@ -1,0 +1,7 @@
+{
+  "database": {
+    "name": "home_assistant",
+    "host": "53caca22-influxdb:8088",
+    "cron": "30 0 * * *"
+  }
+}
